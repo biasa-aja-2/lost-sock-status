@@ -42,13 +42,16 @@ def main():
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(TEXT)
     os.chmod(path, 0o644)
+    mode = os.stat(path).st_mode & 0o777
+    if mode != 0o644:
+        raise ValueError("entry.txt mode is %o, expected 0644" % mode)
     with open(path, "rb") as f:
         raw = f.read()
     read_back = raw.decode("utf-8")
     if read_back != TEXT:
         raise ValueError("read-back differs from TEXT")
     gate(read_back)
-    print("wrote %d chars to %s" % (len(TEXT), path))
+    print("wrote %d chars to %s (mode 0644)" % (len(TEXT), path))
 
 
 if __name__ == "__main__":
